@@ -1,0 +1,260 @@
+import React, { useState, useEffect } from 'react';
+import '../MarqueeContainer.css';
+import { useNavigate } from 'react-router-dom';
+
+interface Course {
+  id: number;
+  image: string;
+  title: string;
+  code: string;
+  level: string;
+  enrollmentStatus: string;
+  department: string;
+  rating: number;
+  instructor: string;
+  credits: number;
+  duration: string;
+  enrolledStudents: number;
+  maxStudents: number;
+  price: number;
+  schedule: string[];
+}
+
+const MarqueeContainer = () => {
+  const navigate = useNavigate()
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  useEffect(() => {
+    const fetchedCourses = [
+      {
+        id: 1,
+        image: "https://admin.expatica.com/uk/wp-content/uploads/sites/10/2023/11/uk-universities-1536x1024.jpg",
+        title: "Advanced React Development",
+        code: "REACT-401",
+        level: "Advanced",
+        enrollmentStatus: "Open",
+        department: "Computer Science",
+        rating: 4.8,
+        instructor: "John Doe",
+        credits: 4,
+        duration: "12 Weeks",
+        enrolledStudents: 35,
+        maxStudents: 50,
+        price: 299,
+        schedule: ["Mon 10AM-12PM", "Wed 2PM-4PM", "Fri 11AM-1PM"]
+      },
+      {
+        id: 2,
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y291cnNlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        title: "Introduction to Python Programming",
+        code: "PYTH-101",
+        level: "Beginner",
+        enrollmentStatus: "Open",
+        department: "Computer Science",
+        rating: 4.5,
+        instructor: "Sarah Johnson",
+        credits: 3,
+        duration: "8 Weeks",
+        enrolledStudents: 42,
+        maxStudents: 60,
+        price: 199,
+        schedule: ["Tue 1PM-3PM", "Thu 1PM-3PM"]
+      },
+      {
+        id: 3,
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNvdXJsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Data Structures and Algorithms",
+        code: "DSA-301",
+        level: "Intermediate",
+        enrollmentStatus: "Waitlist",
+        department: "Computer Science",
+        rating: 4.7,
+        instructor: "Michael Chen",
+        credits: 4,
+        duration: "14 Weeks",
+        enrolledStudents: 48,
+        maxStudents: 45,
+        price: 349,
+        schedule: ["Mon 2PM-4PM", "Wed 2PM-4PM", "Fri 10AM-12PM"]
+      },
+      {
+        id: 4,
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGNvdXJzZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Machine Learning Fundamentals",
+        code: "ML-201",
+        level: "Intermediate",
+        enrollmentStatus: "Open",
+        department: "Data Science",
+        rating: 4.9,
+        instructor: "Emily Rodriguez",
+        credits: 4,
+        duration: "16 Weeks",
+        enrolledStudents: 38,
+        maxStudents: 50,
+        price: 399,
+        schedule: ["Tue 10AM-12PM", "Thu 10AM-12PM"]
+      },
+      {
+        id: 5,
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNvdXJzZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Web Development Bootcamp",
+        code: "WEB-101",
+        level: "Beginner",
+        enrollmentStatus: "Open",
+        department: "Web Development",
+        rating: 4.6,
+        instructor: "Alex Thompson",
+        credits: 3,
+        duration: "10 Weeks",
+        enrolledStudents: 55,
+        maxStudents: 60,
+        price: 249,
+        schedule: ["Mon 6PM-8PM", "Wed 6PM-8PM", "Sat 10AM-1PM"]
+      },
+      {
+        id: 6,
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGNvdXJzZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Advanced JavaScript Patterns",
+        code: "JS-401",
+        level: "Advanced",
+        enrollmentStatus: "Closed",
+        department: "Computer Science",
+        rating: 4.8,
+        instructor: "David Wilson",
+        credits: 4,
+        duration: "12 Weeks",
+        enrolledStudents: 30,
+        maxStudents: 30,
+        price: 329,
+        schedule: ["Tue 4PM-6PM", "Thu 4PM-6PM"]
+      },
+      {
+        id: 7,
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y291cnNlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        title: "UI/UX Design Principles",
+        code: "UX-201",
+        level: "Intermediate",
+        enrollmentStatus: "Open",
+        department: "Design",
+        rating: 4.7,
+        instructor: "Sophia Lee",
+        credits: 3,
+        duration: "8 Weeks",
+        enrolledStudents: 28,
+        maxStudents: 35,
+        price: 279,
+        schedule: ["Mon 1PM-3PM", "Wed 1PM-3PM"]
+      },
+      {
+        id: 8,
+        image: "https://admin.expatica.com/uk/wp-content/uploads/sites/10/2023/11/uk-universities-1536x1024.jpg",
+        title: "Database Management Systems",
+        code: "DBMS-301",
+        level: "Intermediate",
+        enrollmentStatus: "Open",
+        department: "Computer Science",
+        rating: 4.4,
+        instructor: "Robert Brown",
+        credits: 4,
+        duration: "14 Weeks",
+        enrolledStudents: 40,
+        maxStudents: 50,
+        price: 319,
+        schedule: ["Tue 2PM-4PM", "Thu 2PM-4PM", "Fri 2PM-4PM"]
+      },
+      {
+        id: 9,
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNvdXJzZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Mobile App Development with React Native",
+        code: "MOB-301",
+        level: "Intermediate",
+        enrollmentStatus: "Waitlist",
+        department: "Mobile Development",
+        rating: 4.6,
+        instructor: "Jennifer Kim",
+        credits: 4,
+        duration: "12 Weeks",
+        enrolledStudents: 32,
+        maxStudents: 30,
+        price: 349,
+        schedule: ["Mon 4PM-6PM", "Wed 4PM-6PM"]
+      },
+      {
+        id: 10,
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGNvdXJzZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        title: "Cloud Computing Essentials",
+        code: "CLOUD-201",
+        level: "Beginner",
+        enrollmentStatus: "Open",
+        department: "Cloud Computing",
+        rating: 4.3,
+        instructor: "Kevin Martinez",
+        credits: 3,
+        duration: "10 Weeks",
+        enrolledStudents: 45,
+        maxStudents: 60,
+        price: 269,
+        schedule: ["Tue 6PM-8PM", "Thu 6PM-8PM"]
+      }
+    ];
+    
+    setCourses(fetchedCourses);
+    // setSelectedCourse(fetchedCourses[0]); 
+  }, []);
+
+  const handleCourseClick = (course: Course) => {
+    navigate('/explore', {state: {course: course }})
+  };
+
+  return (
+    <div className="marquee-container">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6 mt-3 ">
+            <div className="marquee-left-side-main-title">Our Courses</div>
+            <div className="marquee-left-side-subtitle">A Comprehensive Catalog</div>
+          </div>
+          <div className="col-md-6  mt-3 marquee-right-side text-center">
+            Browse our extensive selection of technology courses taught by industry experts. 
+            Whether you're a beginner or an advanced learner, we have something for everyone.
+          </div>
+        </div>
+      </div>
+
+      <div className="marquee">
+        <div className="marquee__group">
+          {courses.map(course => (
+            <div 
+              key={course.id} 
+              className={`marquee-item ${selectedCourse?.id === course.id ? 'active' : ''}`}
+              onClick={() => handleCourseClick(course)}
+            >
+              <img src={course.image} alt={course.title} />
+              <div className="course-title-overlay">{course.title}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* <div className="marquee marquee--borders">
+        <div className="marquee marquee--reverse">
+          <div className="marquee__group">
+            {courses.map(course => (
+              <div 
+                key={course.id} 
+                className={`marquee-item ${selectedCourse?.id === course.id ? 'active' : ''}`}
+                onClick={() => handleCourseClick(course)}
+              >
+                <img src={course.image} alt={course.title} />
+                <div className="course-title-overlay">{course.title}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div> */}
+    </div>
+  );
+};
+
+export default MarqueeContainer;
