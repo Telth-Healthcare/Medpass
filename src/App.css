@@ -43,9 +43,9 @@ body {
 
 .hero-section {
   min-height: 110vh;
-  background: 
+  /* background: 
     linear-gradient(135deg, rgba(252, 254, 254, 0.3) 0%, rgba(253, 254, 255, 0.3) 100%),
-    url('./assest/logobg.png') no-repeat;
+    url('./assest/logobg.png') no-repeat; */
   background-size: auto, 500px auto;
   display: flex;
   align-items: center;
