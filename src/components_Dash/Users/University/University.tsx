@@ -12,7 +12,6 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { styled } from "@mui/material/styles";
 import Collapse from "@mui/material/Collapse";
 import { IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import UniversityForm from "./UniversityForm";
@@ -23,16 +22,7 @@ import {
 import EmailRoleModal from "../EmailRoleModal";
 import { getAllUser } from "../../../API/UserApi";
 import CommonMRT from "../../../components/MaterialReactTable";
-
-const SectionHeader = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: theme.spacing(2),
-  padding: theme.spacing(2),
-  backgroundColor: theme.palette.background.default,
-  borderRadius: theme.shape.borderRadius,
-}));
+import { SectionHeader } from "../../../CommonStyle";
 
 function University() {
   const [value, setValue] = useState("1");
@@ -114,12 +104,12 @@ function University() {
 
   const userColumns = useMemo(
     () => [
-    {
-        accessorKey: 'index',
+      {
+        accessorKey: "index",
         header: "S.No",
         size: 80,
         Cell: ({ row }) => row.index + 1,
-    },
+      },
       {
         accessorKey: "email",
         header: "Email",
@@ -305,10 +295,7 @@ function University() {
             onClose={handleCancel}
           />
 
-            <CommonMRT 
-         columns={userColumns}
-         data={users}
-        />
+          <CommonMRT columns={userColumns} data={users} />
         </TabPanel>
 
         <TabPanel value="2" sx={{ p: 0, mt: 1 }}>
@@ -343,10 +330,7 @@ function University() {
             </Box>
           </Collapse>
 
-        <CommonMRT 
-         columns={universityColumns}
-         data={universities}
-        />
+          <CommonMRT columns={universityColumns} data={universities} />
         </TabPanel>
 
         <Modal show={showModal} onHide={onHide} centered backdrop="static">
