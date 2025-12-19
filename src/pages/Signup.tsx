@@ -1,245 +1,277 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import BASE_URL from '../BASE_URL';
-import { getInviteMail } from '../API/UserApi';
+import React, { useState, useEffect } from "react";
+import { getInviteMail, signUp } from "../API/UserApi";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { handleApiError } from "../utils/ApiHepler";
+import { TextField, Button, Box, CircularProgress } from "@mui/material";
 
 const Signup: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [fetchingData, setFetchingData] = useState(false);
-  const [error, setError] = useState('');
-  const [phone, setphone] = useState()
+  const getInitialState = () => ({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    role: "",
+    token: "",
+    phone: "",
+    loading: false,
+    fetchingData: true,
+    error: "",
+  });
 
+  const [state, setState] = useState(getInitialState());
+  const [searchParam] = useSearchParams();
+  const navigate = useNavigate();
+
+  /* =========================
+     FETCH INVITE DATA
+  ========================== */
   useEffect(() => {
-    const fetchInviteData = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const inviteToken = params.get('token');
+    const token = searchParam.get("token");
 
-      if (!inviteToken) {
-        setError('Invalid or missing invitation token.');
+    if (!token) {
+      setState((prev) => ({
+        ...prev,
+        fetchingData: false,
+        error: "Invalid or missing invitation token.",
+      }));
+      return;
+    }
+
+    sessionStorage.setItem("tokenId", token);
+    navigate('/register/email-verification', {replace: true})
+    setState((prev) => ({ ...prev, token }));
+    fetchInviteData(token);
+  }, []);
+
+  const fetchInviteData = async (token: string) => {
+    try {
+      const response = await getInviteMail(token);
+
+      if (response.is_used) {
+        setState((prev) => ({
+          ...prev,
+          error: "This invitation has already been used.",
+        }));
         return;
       }
 
-      setToken(inviteToken);
-      setFetchingData(true);
-      setError('');
-
-      try {
-        const response = await getInviteMail(inviteToken);
-
-        if (response.email) setEmail(response.email);
-        if (response.role) setRole(response.role);
-
-
-        if (response.is_used) {
-          setError('This invitation has already been used.');
+      if (response.expires_at) {
+        const expiresAt = new Date(response.expires_at);
+        if (expiresAt < new Date()) {
+          setState((prev) => ({
+            ...prev,
+            error: "This invitation has expired.",
+          }));
           return;
         }
-
-        if (response.expires_at) {
-          const expiresAt = new Date(response.expires_at);
-          if (expiresAt < new Date()) {
-            setError('This invitation has expired.');
-            return;
-          }
-        }
-      } catch (err: any) {
-        console.error('Error fetching invite data:', err);
-        if (err.code === 'ECONNREFUSED') {
-          setError('Cannot connect to server. Please check if the backend is running.');
-        } else if (err.response?.status === 404) {
-          setError('Invitation not found or invalid token.');
-        } else {
-          setError('Invalid or expired invitation link.');
-        }
-      } finally {
-        setFetchingData(false);
       }
-    };
 
-    fetchInviteData();
-  }, []);
+      setState((prev) => ({
+        ...prev,
+        email: response.email || "",
+        role: response.role || "",
+      }));
+    } catch (err) {
+      handleApiError(err);
+      setState((prev) => ({
+        ...prev,
+        error: "Invalid or expired invitation link.",
+      }));
+    } finally {
+      setState((prev) => ({ ...prev, fetchingData: false }));
+    }
+  };
 
+  /* =========================
+     SUBMIT
+  ========================== */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
-    if (!username.trim() || !password.trim() || !token || !role) {
-      setError('All fields are required.');
+    setState((prev) => ({ ...prev, error: "" }));
+
+    const { firstName, lastName, email, password, token, role, phone } = state;
+
+    if (!firstName || !lastName || !email || !password || !token || !role) {
+      setState((prev) => ({
+        ...prev,
+        error: "All fields are required.",
+      }));
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setState((prev) => ({
+        ...prev,
+        error: "Password must be at least 6 characters long.",
+      }));
       return;
     }
 
-    if (!email.includes('@')) {
-      setError('Please enter a valid email address.');
+    if (phone && phone.length < 10) {
+      setState((prev) => ({
+        ...prev,
+        error: "Phone number must be at least 10 digits.",
+      }));
       return;
     }
 
     try {
-      setLoading(true);
+      setState((prev) => ({ ...prev, loading: true }));
 
-      const payload = { username, email, password, role: role.toUpperCase(), token, phone };
+      const payload = {
+        first_name: firstName,
+        last_name: lastName,
+        username: `${firstName} ${lastName}`.trim(),
+        email,
+        password,
+        role: role.toUpperCase(),
+        token,
+        phone,
+      };
 
-      const res = await axios.post(
-        `${BASE_URL}users/`,
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          timeout: 30000,
-        }
-      );
+      const res = await signUp(payload);
 
-      if (res.status === 200 || res.status === 201) {
-        alert("Signup successful! Redirecting to login...");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1000);
+      if (res && res?.id) {
+        navigate('/login')
       }
-
-    } catch (err: any) {
-      console.error("Signup error:", err);
-
-      if (err.response && err.response.data) {
-        const errors = err.response.data;
-
-        // Collect all error messages into one string
-        const messages = Object.entries(errors)
-          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
-          .join(" | ");
-
-        setError(messages || "Signup failed. Please try again.");
-      } else {
-        setError("Network error. Please check your connection.");
-      }
+    } catch (err) {
+      handleApiError(err);
     } finally {
-      setLoading(false);
+      setState((prev) => ({ ...prev, loading: false }));
     }
   };
 
+  const handleInputChange =
+    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setState((prev) => ({ ...prev, [field]: e.target.value }));
+    };
+
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    phone,
+    loading,
+    fetchingData,
+    error,
+  } = state;
+
   if (fetchingData) {
     return (
-      <div className="container-fluid vh-100 d-flex justify-content-center align-items-center">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-2">Verifying invitation...</p>
-        </div>
-      </div>
+      <Box
+        height="100vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CircularProgress />
+      </Box>
     );
   }
 
   return (
-    <div className="container-fluid vh-100">
-      <div className="row h-100">
-        {/* Left side form */}
-        <div className="col-md-6 d-flex justify-content-center align-items-center bg-light">
-          <div className="card shadow p-4 mt-5 w-100" style={{ maxWidth: '400px' }}>
-            <h3 className="text-center mb-4">Complete Your Signup</h3>
+    <Box display="flex" height="100vh">
+      {/* LEFT FORM */}
+      <div className="flex-1 flex items-center justify-center p-6 bg-white">
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 400,
+            borderRadius: 4,
+            boxShadow: "5px 5px 10px 2px rgba(7, 66, 143, 0.58)",
+          }}
+          className="p-8 w-full"
+        >
+          {/* <Box width={380} bgcolor="white" p={4} borderRadius={2} boxShadow={3}> */}
 
-            {error && <div className="alert alert-danger py-2">{error}</div>}
+          <form onSubmit={handleSubmit}>
+            <h1 className="text-2xl font-bold text-center mb-6">
+              Complete Your Signup
+            </h1>
+            <h4 style={{ textAlign: "center", color: "green" }}>{email}</h4>
+            <TextField
+              label="First Name"
+              fullWidth
+              size="medium"
+              margin="normal"
+              value={firstName}
+              onChange={handleInputChange("firstName")}
+              disabled={loading}
+            />
 
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Username *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                  required
-                />
-              </div>
+            <TextField
+              label="Last Name"
+              fullWidth
+              size="medium"
+              margin="normal"
+              value={lastName}
+              onChange={handleInputChange("lastName")}
+              disabled={loading}
+            />
 
-              <div className="mb-3">
-                <label className="form-label">Email *</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  readOnly={!!email}
-                  required
-                />
-              </div>
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              size="medium"
+              margin="normal"
+              value={password}
+              onChange={handleInputChange("password")}
+              disabled={loading}
+            />
 
-              <div className="mb-3">
-                <label className="form-label">Password *</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 6 characters"
-                  required
-                />
-              </div>
+            <TextField
+              label="Mobile Number"
+              fullWidth
+              size="medium"
+              margin="normal"
+              value={phone}
+              onChange={handleInputChange("phone")}
+              disabled={loading}
+            />
 
-              <div className="mb-3">
-                <label className="form-label">Role *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={role}
-                  readOnly   // or use disabled
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">Mobile Number</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={phone}
-                  onChange={(e) => setphone(e.target.value)}
-                  placeholder="Min. 10 characters"
-                  required
-                />
-              </div>
-
-
-              <button
-                type="submit"
-                className="btn btn-primary w-100"
-                disabled={loading || !token || !role}
-              >
-                {loading ? 'Signing up...' : 'Sign Up'}
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Right side banner */}
-        <div className="col-md-6 d-none d-md-flex bg-primary text-white justify-content-center align-items-center">
-          <div className="text-center px-5">
-            <h1 className="mb-3">Welcome!</h1>
-            <p className="lead">
-              You've been invited to join us.
-              Create your account and get started!
-            </p>
-            {email && (
-              <div className="mt-4">
-                <small className="opacity-75">
-                  Invitation for: <strong>{email}</strong>
-                </small>
-              </div>
-            )}
-          </div>
-        </div>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              fullWidth
+              sx={{
+                py: 1.5,
+                backgroundColor: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+                "&:disabled": {
+                  backgroundColor: "#90caf9",
+                },
+              }}
+              disabled={loading || !state.token}
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </Button>
+          </form>
+          {/* </Box> */}
+        </Box>
       </div>
-    </div>
+      {/* RIGHT SIDE */}
+      <Box
+        flex={1}
+        display={{ xs: "none", md: "flex" }}
+        justifyContent="center"
+        alignItems="center"
+        bgcolor="primary.main"
+        color="white"
+      >
+        <Box textAlign="center" maxWidth={400}>
+          <h1>Welcome!</h1>
+          <p>
+            You've been invited to join us. Create your account and get started!
+          </p>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

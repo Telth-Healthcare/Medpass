@@ -33,10 +33,10 @@ const StudentApplicationManager = () => {
   const [open, setOpen] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   let roleData = localStorage.getItem("role");
+  let roleUser =  [ 'TELTH_ADMIN', "AGENT", "UNIVERSITY_ADMIN"].includes(roleData) ? 'STUDENT' : '';
 
   useEffect(() => {
-    let userRole = localStorage.getItem("role");
-    if (userRole === "TELTH_ADMIN") {
+    if (roleData && roleData === "TELTH_ADMIN") {
       fetchStudents();
     } else {
       getStudent();
@@ -104,7 +104,7 @@ const StudentApplicationManager = () => {
       </SectionHeader>
       <EmailRoleModal
         open={showUserForm}
-        role={roleData}
+        role={roleUser}
         onClose={() => setShowUserForm(false)}
       />
       <CommonMRT
