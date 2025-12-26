@@ -38,7 +38,7 @@ interface MenuItem {
   children?: (Omit<MenuItem, 'children'> & { allowedRoles?: string[] })[];
 }
 
-type UserRole = 'TELTH_ADMIN' | 'UNIVERSITY_ADMIN' | 'AGENT' | 'STUDENT';
+type UserRole = 'TELTH_ADMIN' | 'UNIVERSITY' | 'AGENT' | 'STUDENT';
 
 const allMenuItems: MenuItem[] = [
   { 
@@ -46,14 +46,14 @@ const allMenuItems: MenuItem[] = [
     label: 'Dashboard', 
     path: '/dashboard', 
     icon: LayoutDashboard,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   {
     id: 'user-types',
     label: 'User Types',
     path: '/dashboard/user-types',
     icon: Users,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT'], 
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT'], 
     children: [
       { 
         id: 'user-types', 
@@ -88,7 +88,7 @@ const allMenuItems: MenuItem[] = [
         label: 'Students', 
         path: '/dashboard/students', 
         icon: GraduationCap,
-        allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT']
+        allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT']
       },
     ]   
   },
@@ -97,21 +97,21 @@ const allMenuItems: MenuItem[] = [
     label: 'Courses', 
     path: '/dashboard/courses', 
     icon: BookOpen,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   { 
     id: 'notice', 
     label: 'Notice', 
     path: '/dashboard/notice', 
     icon: FileText,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   { 
     id: 'fees-management', 
     label: 'Fees Management', 
     path: '/dashboard/fees-management', 
     icon: CreditCard,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT']
   },
   { 
     id: 'setting', 
@@ -119,28 +119,28 @@ const allMenuItems: MenuItem[] = [
     path: '/dashboard/setting', 
     icon: Settings, 
     section: 'OTHERS',
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   { 
     id: 'profile', 
     label: 'Profile', 
     path: '/dashboard/profile', 
     icon: User,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   { 
     id: 'help', 
     label: 'Help', 
     path: '/dashboard/help', 
     icon: HelpCircle,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   },
   { 
     id: 'logout', 
     label: 'Logout', 
     path: '#', 
     icon: LogOut,
-    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT']
+    allowedRoles: ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT']
   }
 ];
 
@@ -157,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick }) => 
     const getUserRole = () => {
       try {
         const storedRole = localStorage.getItem('role');
-        if (storedRole && ['TELTH_ADMIN', 'UNIVERSITY_ADMIN', 'AGENT', 'STUDENT'].includes(storedRole)) {
+        if (storedRole && ['TELTH_ADMIN', 'UNIVERSITY', 'AGENT', 'STUDENT'].includes(storedRole)) {
           setUserRole(storedRole as UserRole);
         }
       } catch (error) {

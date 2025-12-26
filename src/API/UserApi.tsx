@@ -5,7 +5,7 @@ import { headers, headers_content } from "../Constant";
 // Signup
 const signUp = (payload: any) => {
   return axios
-    .post(`${BASE_URL}users/`, payload, headers)
+    .post(`${BASE_URL}invitations/accept/`, payload, headers)
     .then(res => res.data);
 };
 
@@ -16,21 +16,21 @@ const loginApi = (payload: {
   otp: string;
 }) => {
   return axios
-    .post(`${BASE_URL}token/`, payload, headers)
+    .post(`${BASE_URL}accounts/login/`, payload, headers)
     .then(res => res.data);
 };
 
 // OTP Verify
 const otpVerfiyAPi = (payload: { email: string; password: string }) => {
   return axios
-    .post(`${BASE_URL}otp/`, payload, headers)
+    .post(`${BASE_URL}accounts/otp/`, payload, headers)
     .then(res => res.data);
 };
 
 // Get all users
 const getAllUser = () => {
   return axios
-    .get(`${BASE_URL}users/`, headers_content())
+    .get(`${BASE_URL}accounts/users/`, headers_content())
     .then(res => res.data);
 };
 
@@ -69,14 +69,14 @@ const resetPassword = (userName: string, payload: any) => {
 // Get invite mail data
 const getInviteMail = (token: string) => {
   return axios
-    .get(`${BASE_URL}get-invite/${token}/`, headers_content())
+    .get(`${BASE_URL}get-invite/${token}/`, headers)
     .then(res => res.data);
 };
 
 // Send invite
 const sendInvite = (payload: any) => {
   return axios
-    .post(`${BASE_URL}send-invite/`, payload, headers_content())
+    .post(`${BASE_URL}invitations/send/`, payload, headers_content())
     .then(res => res.data);
 };
 
@@ -114,7 +114,7 @@ const usermaindashboardlist = async (
   const refreshToken = localStorage.getItem("refresh_token");
 
   const fetchUsers = (token: string) =>
-    axios.get(`${BASE_URL}users/?page=${page}&page_size=${pageSize}`, {
+    axios.get(`${BASE_URL}account/users/`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -137,9 +137,9 @@ const usermaindashboardlist = async (
         const retryRes = await fetchUsers(newAccessToken);
         return retryRes.data;
       } catch (refreshError) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refresh_token");
-        window.location.href = "/login";
+        // localStorage.removeItem("accessToken");
+        // localStorage.removeItem("refresh_token");
+        // window.location.href = "/login";
         throw refreshError;
       }
     }

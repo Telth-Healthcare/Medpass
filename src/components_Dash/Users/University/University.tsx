@@ -32,7 +32,7 @@ function University() {
   const [universities, setUniversities] = useState([]);
   const [getUniversities, setGetUniversities] = useState();
   const [showModal, setShowModal] = useState(false);
-  let roleData: string = "UNIVERSITY_ADMIN";
+  let roleData: string = "UNIVERSITY";
 
   useEffect(() => {
     getUserDetails();
@@ -46,7 +46,7 @@ function University() {
 
       if (Array.isArray(responseData)) {
         const filterUser = responseData.filter(
-          (item) => item?.role && item.role.toLowerCase() === "university_admin"
+          (item) => item?.groups && item.groups[0].name.toLowerCase() === "university"
         );
 
         setUsers(filterUser);

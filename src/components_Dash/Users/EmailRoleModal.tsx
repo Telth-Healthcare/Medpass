@@ -73,7 +73,7 @@ const EmailRoleModal: React.FC<EmailRoleModalProps> = ({ open, onClose, role }) 
     { value: "TELTH_ADMIN", label: "Telth-Admin" },
     { value: "STUDENT", label: "Student" },
     { value: "AGENT", label: "Professor" },
-    { value: "UNIVERSITY_ADMIN", label: "University Admin" }
+    { value: "UNIVERSITY", label: "University Admin" }
   ];
   
   const validateEmail = (email: string): boolean => {

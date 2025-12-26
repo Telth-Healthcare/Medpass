@@ -33,7 +33,7 @@ const StudentApplicationManager = () => {
   const [open, setOpen] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   let roleData = localStorage.getItem("role");
-  let roleUser =  [ 'TELTH_ADMIN', "AGENT", "UNIVERSITY_ADMIN"].includes(roleData) ? 'STUDENT' : '';
+  let roleUser =  [ 'TELTH_ADMIN', "AGENT", "UNIVERSITY"].includes(roleData) ? 'STUDENT' : '';
 
   useEffect(() => {
     if (roleData && roleData === "TELTH_ADMIN") {
@@ -56,7 +56,7 @@ const StudentApplicationManager = () => {
     try {
       const data = await getAllUser();
       const studentUsers = data.results.filter(
-        (u) => u.role?.toLowerCase() === "student"
+        (item) => item.groups[0]?.name?.toLowerCase() === "student"
       );
       setStudents(studentUsers);
     } catch {

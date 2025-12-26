@@ -40,7 +40,7 @@ const Agencies = () => {
       const data = responseData?.results;
       if (data) {
         const agentList = data.filter(
-          (element) => element.role && element.role.toLowerCase() === "agent"
+          (element) => element.groups && element.groups[0].name.toLowerCase() === "agent"
         );
         disptach({
           type: "multiple",

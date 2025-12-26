@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { FaUserCircle } from 'react-icons/fa'; // User icon
-import logo from '../assest/logobg.png';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
+import { FaUserCircle } from "react-icons/fa";
+import logo from "../assest/logobg.png";
 
 const CustomNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -13,30 +13,30 @@ const CustomNavbar: React.FC = () => {
       setScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const [show, setShow] = useState(false);
 
   const handleMouseEnter = () => setShow(true);
-  const hanldeMouseLeave = () => setShow(false)
- 
+  const hanldeMouseLeave = () => setShow(false);
+
   return (
     <Navbar
       expand="lg"
       fixed="top"
-      className={`navbar-custom ${scrolled ? 'scrolled' : ''}`}
+      className={`navbar-custom ${scrolled ? "scrolled" : ""}`}
       variant="dark"
       style={{
-        backdropFilter: 'blur(5px)',
-        backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
-        boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.1)' : 'none',
-        transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
-        padding: '10px 20px', 
+        backdropFilter: "blur(5px)",
+        backgroundColor: scrolled ? "rgba(255, 255, 255, 0.9)" : "transparent",
+        boxShadow: scrolled ? "0 2px 10px rgba(0, 0, 0, 0.1)" : "none",
+        transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+        padding: "10px 20px",
       }}
     >
-      <Container style={{ height: "55px"}}>
+      <Container style={{ height: "55px" }}>
         {/* Logo */}
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img
@@ -55,21 +55,27 @@ const CustomNavbar: React.FC = () => {
             <Nav.Link
               as={Link}
               to="/"
-              className={`contact-link ${location.pathname === '/' ? 'active' : ''}`}
+              className={`contact-link ${
+                location.pathname === "/" ? "active" : ""
+              }`}
             >
               Home
             </Nav.Link>
             <Nav.Link
               as={Link}
               to="/about"
-              className={`contact-link ${location.pathname === '/about' ? 'active' : ''}`}
+              className={`contact-link ${
+                location.pathname === "/about" ? "active" : ""
+              }`}
             >
               About
             </Nav.Link>
             <Nav.Link
               as={Link}
               to="/program"
-              className={`contact-link ${location.pathname === '/program' ? 'active' : ''}`}
+              className={`contact-link ${
+                location.pathname === "/program" ? "active" : ""
+              }`}
             >
               Program Details
             </Nav.Link>
@@ -83,27 +89,30 @@ const CustomNavbar: React.FC = () => {
             <Nav.Link
               as={Link}
               to="/contact"
-              className={`contact-link ${location.pathname === '/contact' ? 'active' : ''}`}
+              className={`contact-link ${
+                location.pathname === "/contact" ? "active" : ""
+              }`}
             >
               Contact
             </Nav.Link>
             <NavDropdown
-  title={<FaUserCircle size={30} color="#8f0b94" />}
-  id="user-dropdown"
-  align="end"
-  show={show}
-  onMouseEnter={window.innerWidth > 991 ? handleMouseEnter : undefined}
-  onMouseLeave={window.innerWidth > 991 ? hanldeMouseLeave : undefined}
-  drop="down"
-  className="user-dropdown"
->
-  <NavDropdown.Item as={Link} to="/login">
-    Sign In
-  </NavDropdown.Item>
-</NavDropdown>
-
-
-
+              title={<FaUserCircle size={30} color="#8f0b94" />}
+              id="user-dropdown"
+              align="end"
+              show={show}
+              onMouseEnter={
+                window.innerWidth > 991 ? handleMouseEnter : undefined
+              }
+              onMouseLeave={
+                window.innerWidth > 991 ? hanldeMouseLeave : undefined
+              }
+              drop="down"
+              className="user-dropdown"
+            >
+              <NavDropdown.Item as={Link} to="/login">
+                Sign In
+              </NavDropdown.Item>
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -111,4 +120,4 @@ const CustomNavbar: React.FC = () => {
   );
 };
 
-export default CustomNavbar; 
+export default CustomNavbar;

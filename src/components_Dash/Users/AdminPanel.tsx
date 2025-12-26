@@ -25,7 +25,7 @@ const AdminPanel = () => {
   const getUserDetails = async () => {
     const response = await getAllUser();
     const admins = response.results.filter(
-      (item) => item.role?.toLowerCase() === "telth_admin"
+      (item) => item.groups[0].name?.toLowerCase() === "telth_admin"
     );
     dispatch({ type: "multiple", payload: { data: admins } });
   };
